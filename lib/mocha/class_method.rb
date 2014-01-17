@@ -44,12 +44,8 @@ module Mocha
           elsif stubbee.__metaclass__.private_instance_methods.include?(method)
             @original_visibility = :private
           end
-          if @original_method
-            if @original_method.owner == stubbee.__metaclass__
-              stubbee.__metaclass__.send(:remove_method, method)
-            elsif RUBY_VERSION >= '2.1' && @original_method.name != @original_method.original_name
-              @original_method.owner.send(:remove_method, method)
-            end
+          if @original_method && @original_method.owner == stubbee.__metaclass__
+            stubbee.__metaclass__.send(:remove_method, method)
           end
         rescue NameError
           # deal with nasties like ActiveRecord::Associations::AssociationProxy

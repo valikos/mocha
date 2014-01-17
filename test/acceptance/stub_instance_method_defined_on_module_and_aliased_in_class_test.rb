@@ -30,7 +30,7 @@ class StubInstanceMethodDefinedOnModuleAndAliasedInClassTest < Mocha::TestCase
       end
     end
 
-    assert_snapshot_unchanged(klass) do
+    assert_snapshot_changed(klass) do
       test_result = run_as_test do
         klass.stubs(:my_class_method_aliased).returns(:new_return_value)
         assert_equal :new_return_value, klass.my_class_method_aliased
@@ -56,7 +56,7 @@ class StubInstanceMethodDefinedOnModuleAndAliasedInClassTest < Mocha::TestCase
       end
     end
 
-    assert_snapshot_unchanged(klass) do
+    assert_snapshot_changed(klass) do
       test_result = run_as_test do
         klass.stubs(:my_class_method_aliased).returns(:new_return_value)
         assert_equal :new_return_value, klass.send(:my_class_method_aliased)
@@ -82,7 +82,7 @@ class StubInstanceMethodDefinedOnModuleAndAliasedInClassTest < Mocha::TestCase
       end
     end
 
-    assert_snapshot_unchanged(klass) do
+    assert_snapshot_changed(klass) do
       test_result = run_as_test do
         klass.stubs(:my_class_method_aliased).returns(:new_return_value)
         assert_equal :new_return_value, klass.send(:my_class_method_aliased)

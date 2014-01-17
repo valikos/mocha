@@ -47,6 +47,10 @@ module Mocha
           if @original_method && @original_method.owner == stubbee.__metaclass__
             stubbee.__metaclass__.send(:remove_method, method)
           end
+          # stub_ancestors = stubbee.singleton_class.ancestors
+          # if RUBY_VERSION >= '2.1' && stub_ancestors.include?(@original_method.owner)
+          #   @original_method.owner.send(:remove_method, method)
+          # end
         rescue NameError
           # deal with nasties like ActiveRecord::Associations::AssociationProxy
         end
@@ -69,16 +73,24 @@ module Mocha
     end
 
     def restore_original_method
-      if @original_method && @original_method.owner == stubbee.__metaclass__
-        if RUBY_VERSION < '1.9'
-          original_method = @original_method
-          stubbee.__metaclass__.send(:define_method, method) do |*args, &block|
-            original_method.call(*args, &block)
+      if @original_method
+        if @original_method.owner == stubbee.__metaclass__
+          if RUBY_VERSION < '1.9'
+            original_method = @original_method
+            stubbee.__metaclass__.send(:define_method, method) do |*args, &block|
+              original_method.call(*args, &block)
+            end
+          else
+            stubbee.__metaclass__.send(:define_method, method, @original_method)
           end
-        else
-          stubbee.__metaclass__.send(:define_method, method, @original_method)
         end
+
+        # stub_ancestors = stubbee.singleton_class.ancestors
+        # if stub_ancestors.include?(@original_method.owner)
+        #   stubbee.__metaclass__.send(:define_method, method, @original_method)
+        # end
       end
+
       if @original_visibility
         Module.instance_method(@original_visibility).bind(stubbee.__metaclass__).call(method)
       end
